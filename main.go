@@ -99,13 +99,24 @@ func main() {
     if len(args) >= 2 {
         // 检查是否是 GitLab 仓库
         isGitLab := false
-        var owner, repo string
+        var owner, repo, gitLabHost string
         var downloadAll bool
 
         if args[0] == "gitlab" {
-            // GitLab 仓库格式: gitlab <所有者> <仓库名> [all]
-            if len(args) >= 3 {
+            // GitLab 仓库格式:
+            // 格式1: gitlab <主机名> <所有者> <仓库名> [all]
+            // 格式2: gitlab <所有者> <仓库名> [all] (默认 git.ryujinx.app)
+            if len(args) >= 4 {
+                // 格式1: 带主机名
                 isGitLab = true
+                gitLabHost = args[1]
+                owner = args[2]
+                repo = args[3]
+                downloadAll = len(args) >= 5 && args[4] == "all"
+            } else if len(args) >= 3 {
+                // 格式2: 无主机名，使用默认值
+                isGitLab = true
+                gitLabHost = "" // 空值，会使用默认值
                 owner = args[1]
                 repo = args[2]
                 downloadAll = len(args) >= 4 && args[3] == "all"
@@ -127,11 +138,11 @@ func main() {
 
         if isGitLab {
             if downloadAll {
-                if err := d.ProcessGitLabRepoAll(owner, repo, ""); err != nil {
+                if err := d.ProcessGitLabRepoAll(gitLabHost, owner, repo, ""); err != nil {
                     logger.Error("处理仓库 %s/%s 失败: %v", owner, repo, err)
                 }
             } else {
-                if err := d.ProcessGitLabRepo(owner, repo, ""); err != nil {
+                if err := d.ProcessGitLabRepo(gitLabHost, owner, repo, ""); err != nil {
                     logger.Error("处理仓库 %s/%s 失败: %v", owner, repo, err)
                 }
             }
@@ -185,7 +196,7 @@ func main() {
                 defer func() { <-sem }() // 释放槽位
 
                 if r.Type == "gitlab" {
-                    if err := d.ProcessGitLabRepo(r.Owner, r.Repo, r.Proxy); err != nil {
+                    if err := d.ProcessGitLabRepo(r.GitLabHost, r.Owner, r.Repo, r.Proxy); err != nil {
                         logger.Error("处理 GitLab 仓库 %s/%s 失败: %v", r.Owner, r.Repo, err)
                     }
                 } else {
@@ -231,7 +242,8 @@ func generateExampleConfigs(execDir string) {
         content := `# 仓库配置文件
 # 格式:
 #   github 所有者 仓库名 [代理]  # GitHub 仓库
-#   gitlab 所有者 仓库名 [代理]  # GitLab 仓库
+#   gitlab 所有者 仓库名 [代理]  # GitLab 仓库（使用默认实例: git.ryujinx.app）
+#   gitlab <主机名> 所有者 仓库名 [代理]  # GitLab 仓库（使用自定义实例）
 #   所有者 仓库名 [代理]          # 默认 GitHub 仓库
 # 代理是可选的，如果不指定则使用全局代理列表（见 proxies.txt）
 # 示例:
@@ -241,8 +253,13 @@ func generateExampleConfigs(execDir string) {
 # starship starship
 # 
 # # GitLab 仓库示例
+# 
+# # 使用默认 GitLab 实例 (git.ryujinx.app)
 # gitlab ryubing canary
-# gitlab owner repo
+# 
+# # 使用自定义 GitLab 实例
+# gitlab git.example.com owner repo
+# gitlab gitlab.com group project
 `
         if err := os.WriteFile(reposExample, []byte(content), 0644); err != nil {
             logger.Warn("无法生成示例仓库配置文件: %v", err)

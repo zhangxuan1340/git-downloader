@@ -25,8 +25,9 @@ const (
     retryDelay     = 5 * time.Second
     githubAPI      = "https://api.github.com/repos/%s/%s/releases/latest"
     githubAPIAll   = "https://api.github.com/repos/%s/%s/releases"
-    gitlabAPI      = "https://git.ryujinx.app/api/v4/projects/%s%%2F%s/releases/%s"
-    gitlabAPIAll   = "https://git.ryujinx.app/api/v4/projects/%s%%2F%s/releases"
+    gitlabAPIFormat      = "https://%s/api/v4/projects/%s%%2F%s/releases/%s"
+    gitlabAPIAllFormat   = "https://%s/api/v4/projects/%s%%2F%s/releases"
+    defaultGitLabHost    = "git.ryujinx.app"
 )
 
 // Asset 表示 release 中的一个资产
@@ -231,12 +232,18 @@ func (d *Downloader) ProcessRepoAll(owner, repo, specifiedProxy string) error {
 }
 
 // ProcessGitLabRepo 处理单个 GitLab 仓库（仅最新版本）
-func (d *Downloader) ProcessGitLabRepo(owner, repo, specifiedProxy string) error {
+func (d *Downloader) ProcessGitLabRepo(gitLabHost, owner, repo, specifiedProxy string) error {
+    // 如果未指定主机名，使用默认值
+    if gitLabHost == "" {
+        gitLabHost = defaultGitLabHost
+    }
+    
     logger.Info("========================================")
     logger.Info("开始处理 GitLab 仓库: %s/%s", owner, repo)
+    logger.Info("GitLab 实例: %s", gitLabHost)
 
     // 1. 获取最新 release 信息
-    release, err := d.fetchGitLabLatestRelease(owner, repo)
+    release, err := d.fetchGitLabLatestRelease(gitLabHost, owner, repo)
     if err != nil {
         logger.Error("获取 release 失败: %v", err)
         return err
@@ -294,12 +301,18 @@ func (d *Downloader) ProcessGitLabRepo(owner, repo, specifiedProxy string) error
 }
 
 // ProcessGitLabRepoAll 处理单个 GitLab 仓库的所有版本
-func (d *Downloader) ProcessGitLabRepoAll(owner, repo, specifiedProxy string) error {
+func (d *Downloader) ProcessGitLabRepoAll(gitLabHost, owner, repo, specifiedProxy string) error {
+    // 如果未指定主机名，使用默认值
+    if gitLabHost == "" {
+        gitLabHost = defaultGitLabHost
+    }
+    
     logger.Info("========================================")
     logger.Info("开始处理 GitLab 仓库: %s/%s（所有版本）", owner, repo)
+    logger.Info("GitLab 实例: %s", gitLabHost)
 
     // 1. 获取所有 release 信息
-    releases, err := d.fetchGitLabAllReleases(owner, repo)
+    releases, err := d.fetchGitLabAllReleases(gitLabHost, owner, repo)
     if err != nil {
         logger.Error("获取所有 release 失败: %v", err)
         return err
@@ -424,8 +437,13 @@ func (d *Downloader) fetchAllReleases(owner, repo string) ([]*Release, error) {
 }
 
 // fetchGitLabLatestRelease 调用 GitLab API 获取最新 release
-func (d *Downloader) fetchGitLabLatestRelease(owner, repo string) (*Release, error) {
-    url := fmt.Sprintf(gitlabAPIAll, owner, repo)
+func (d *Downloader) fetchGitLabLatestRelease(gitLabHost, owner, repo string) (*Release, error) {
+    // 如果未指定主机名，使用默认值
+    if gitLabHost == "" {
+        gitLabHost = defaultGitLabHost
+    }
+    
+    url := fmt.Sprintf(gitlabAPIAllFormat, gitLabHost, owner, repo)
     req, err := http.NewRequest("GET", url, nil)
     if err != nil {
         return nil, err
@@ -478,8 +496,13 @@ func (d *Downloader) fetchGitLabLatestRelease(owner, repo string) (*Release, err
 }
 
 // fetchGitLabAllReleases 调用 GitLab API 获取所有 release
-func (d *Downloader) fetchGitLabAllReleases(owner, repo string) ([]*Release, error) {
-    url := fmt.Sprintf(gitlabAPIAll, owner, repo)
+func (d *Downloader) fetchGitLabAllReleases(gitLabHost, owner, repo string) ([]*Release, error) {
+    // 如果未指定主机名，使用默认值
+    if gitLabHost == "" {
+        gitLabHost = defaultGitLabHost
+    }
+    
+    url := fmt.Sprintf(gitlabAPIAllFormat, gitLabHost, owner, repo)
     req, err := http.NewRequest("GET", url, nil)
     if err != nil {
         return nil, err

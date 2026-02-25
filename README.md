@@ -5,7 +5,7 @@
 ## 功能特性
 
 - ✅ **GitHub 支持**：下载指定仓库的最新或所有 Release 版本
-- ✅ **GitLab 支持**：支持从 `git.ryujinx.app` 私有 GitLab 仓库下载 Release
+- ✅ **GitLab 支持**：支持多个 GitLab 实例，默认使用 `git.ryujinx.app`
 - ✅ **多平台支持**：支持 Windows、macOS、Linux（包括 ARM 架构）
 - ✅ **代理加速**：内置 GitHub 加速代理，提高下载速度
 - ✅ **进度条**：显示下载进度，支持大文件下载
@@ -58,14 +58,20 @@ make build-all
 ./github_download nginx nginx all
 ```
 
-#### GitLab 仓库（仅支持 git.ryujinx.app）
+#### GitLab 仓库（支持多个 GitLab 实例）
 
 ```bash
-# 下载最新 Release
+# 下载最新 Release（使用默认 GitLab 实例: git.ryujinx.app）
 ./github_download gitlab ryubing canary
 
-# 下载所有 Release
+# 下载所有 Release（使用默认 GitLab 实例: git.ryujinx.app）
 ./github_download gitlab ryubing canary all
+
+# 下载最新 Release（使用自定义 GitLab 实例）
+./github_download gitlab git.example.com owner repo
+
+# 下载所有 Release（使用自定义 GitLab 实例）
+./github_download gitlab git.example.com owner repo all
 ```
 
 ### 2. 通过配置文件批量下载
@@ -83,8 +89,14 @@ cp conf/repos.conf.example conf/repos.conf
 github junegunn fzf
 github cli cli gh-proxy.com
 
-# GitLab 仓库示例（仅支持 git.ryujinx.app）
+# GitLab 仓库示例
+
+# 使用默认 GitLab 实例 (git.ryujinx.app)
 gitlab ryubing canary
+
+# 使用自定义 GitLab 实例
+gitlab git.example.com owner repo
+gitlab gitlab.com group project
 
 # 默认 GitHub 仓库（不指定类型）
 starship starship
@@ -121,7 +133,8 @@ starship starship
 
 格式：
 - `github <所有者> <仓库名> [代理]` - GitHub 仓库
-- `gitlab <所有者> <仓库名> [代理]` - GitLab 仓库（仅支持 git.ryujinx.app）
+- `gitlab <所有者> <仓库名> [代理]` - GitLab 仓库（使用默认实例: git.ryujinx.app）
+- `gitlab <主机名> <所有者> <仓库名> [代理]` - GitLab 仓库（使用自定义实例）
 - `<所有者> <仓库名> [代理]` - 默认 GitHub 仓库
 
 ### 代理配置文件 (`conf/proxies.txt`)
@@ -139,7 +152,7 @@ cf.ghproxy.cc
 
 ## 注意事项
 
-1. **GitLab 支持**：当前仅支持 `git.ryujinx.app` 私有 GitLab 仓库，不支持 `gitlab.com` 公共仓库。
+1. **GitLab 支持**：支持多个 GitLab 实例，默认使用 `git.ryujinx.app`，但也可以指定其他 GitLab 实例，包括 `gitlab.com` 公共仓库。
 
 2. **代理使用**：GitLab 下载不会使用 GitHub 代理，会直接从源站下载。
 
@@ -201,7 +214,7 @@ MIT License
 
 ## 作者
 
-- Author: Your Name
+- Author: zhangxuan1340
 - Repository: https://nas.passbook.top:6006/zhangxuan1340/GitHub-download
 
 ## 更新日志
@@ -214,3 +227,9 @@ MIT License
 - ✅ 代理加速功能
 - ✅ 进度条显示
 - ✅ 批量下载支持
+
+### v1.1.0
+- ✅ 支持多个 GitLab 实例
+- ✅ 新增命令格式：`gitlab <主机名> <所有者> <仓库名> [all]`
+- ✅ 新增配置格式：`gitlab <主机名> <所有者> <仓库名> [代理]`
+- ✅ 保持向后兼容，默认使用 git.ryujinx.app
