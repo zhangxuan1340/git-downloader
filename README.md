@@ -24,8 +24,8 @@
 
 ```bash
 # 克隆仓库
-git clone https://nas.passbook.top:6006/zhangxuan1340/GitHub-download.git
-cd GitHub-download
+git clone https://github.com/zhangxuan1340/git-downloader.git
+cd git-downloader
 
 # 编译当前平台
 make build
@@ -215,7 +215,7 @@ MIT License
 ## 作者
 
 - Author: zhangxuan1340
-- Repository: https://nas.passbook.top:6006/zhangxuan1340/GitHub-download
+- Repository: https://github.com/zhangxuan1340/git-downloader
 
 ## 更新日志
 
