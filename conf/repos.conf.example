@@ -1,0 +1,23 @@
+# 仓库配置文件
+# 格式:
+#   github 所有者 仓库名 [代理]  # GitHub 仓库
+#   gitlab 所有者 仓库名 [代理]  # GitLab 仓库
+#   所有者 仓库名 [代理]          # 默认 GitHub 仓库
+# 代理是可选的，如果不指定则使用全局代理列表（见 proxies.txt）
+# 示例:
+# # GitHub 仓库示例
+# junegunn fzf
+# cli cli gh-proxy.com
+# starship starship
+# 
+# # GitLab 仓库示例
+# gitlab ryubing canary
+# gitlab owner repo
+#
+# 常用代理（可替换上面的 [代理] 部分）:
+# - gh-proxy.com
+# - ghps.cc
+# - hub.fastgit.xyz (可能不稳定)
+# - cf.ghproxy.cc
+#
+# 注意: 代理地址只需要写域名，不要加 https://

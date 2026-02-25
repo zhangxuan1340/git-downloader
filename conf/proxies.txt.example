@@ -1,0 +1,10 @@
+# GitHub 加速代理列表（仅供参考）
+# 使用方法: 在 repos.conf 中每行的第三列填写以下任一域名
+# 注意: 这些代理可能随时失效，请自行测试可用性
+
+gh-proxy.com
+ghps.cc
+hub.fastgit.xyz
+cf.ghproxy.cc
+ghproxy.com
+git.yzuu.com
